@@ -23,17 +23,11 @@ const fetchAPI = function(date) {
 };
 
 const submitAPI = (formData) => {
-  // 1. Get existing bookings or create a new array
-  const bookings = JSON.parse(localStorage.getItem("bookings") || "[]");
-  // 2. Add new booking
-  bookings.push(formData);
-  // 3. Save back to localStorage
-  localStorage.setItem("bookings", JSON.stringify(bookings));
 
-  // Call the API for submission as before
-  if (window.submitAPI(formData)) {
-    setLocation("/ConfirmedBooking");
-  }
+  const bookings = JSON.parse(localStorage.getItem("bookings") || "[]");
+  bookings.push(formData);
+  localStorage.setItem("bookings", JSON.stringify(bookings));
+  return true; 
 };
 
 

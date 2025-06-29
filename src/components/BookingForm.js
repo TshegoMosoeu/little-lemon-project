@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect} from "react";
 
-// Client-side validation function
+
 export function isFormValid(form) {
   return Boolean(
     form.date &&
@@ -16,16 +16,22 @@ const BookingForm = ({ availableTimes, dispatch, submitForm }) => {
     date: "",
     time: "",
     guests: "",
-    occasion: "Birthday",
+    occasion: "",
   });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
-    if (name === "date") {
-      dispatch(new Date(value));
-    }
+    setForm((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
+
+  useEffect(() => {
+    if (form.date) {
+      dispatch(new Date(form.date));
+    }
+  }, [form.date, dispatch]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -34,84 +40,84 @@ const BookingForm = ({ availableTimes, dispatch, submitForm }) => {
     }
   };
 
-  return (
-    <section>
-      <form onSubmit={handleSubmit}>
-        <fieldset>
-          {/* Date */}
-          <div>
-            <label htmlFor="book-date">Choose date:</label>
-            <input
-              id="book-date"
-              name="date"
-              type="date"
-              value={form.date}
-              onChange={handleChange}
-              required
-            />
-          </div>
 
-          {/* Time */}
-          <div>
-            <label htmlFor="book-time">Choose time:</label>
-            <select
-              id="book-time"
-              name="time"
-              value={form.time}
-              onChange={handleChange}
-              required
-            >
-              <option value="">Select a Time</option>
-              {availableTimes.map((time) => (
-                <option key={time} value={time}>
-                  {time}
+
+  return (
+    <div className="booking-form-wrapper">
+      <form onSubmit={handleSubmit} noValidate>
+        <h2 className="booking-form-title">Reserve a Table</h2>
+        <div className="booking-form-field">
+          <label htmlFor="book-date">Date</label>
+          <input
+            id="book-date"
+            name="date"
+            type="date"
+            required
+            value={form.date}
+            onChange={handleChange}
+            className="booking-form-input"
+            autoComplete="off"
+            placeholder="Select date"
+          />
+        </div>
+        <div className="booking-form-field">
+          <label htmlFor="book-time">Time</label>
+          <select
+            id="book-time"
+            name="time"
+            required
+            value={form.time}
+            onChange={handleChange}
+            className="booking-form-select"
+          >
+            <option value="">Select a time</option>
+            {availableTimes &&
+              availableTimes.map((t) => (
+                <option key={t} value={t}>
+                  {t}
                 </option>
               ))}
-            </select>
-          </div>
-
-          {/* Guests */}
-          <div>
-            <label htmlFor="book-guests">Number of guests:</label>
-            <input
-              id="book-guests"
-              name="guests"
-              type="number"
-              min="1"
-              value={form.guests}
-              onChange={handleChange}
-              required
-            />
-          </div>
-
-          {/* Occasion */}
-          <div>
-            <label htmlFor="book-occasion">Occasion:</label>
-            <select
-              id="book-occasion"
-              name="occasion"
-              value={form.occasion}
-              onChange={handleChange}
-              required
-            >
-              <option value="Birthday">Birthday</option>
-              <option value="Anniversary">Anniversary</option>
-            </select>
-          </div>
-
-          {/* Submit Button */}
-          <div>
-            <button
-              type="submit"
-              aria-label="Make Your Reservation"
-              disabled={!isFormValid(form)}
-            >
-              Make Your Reservation
-            </button>
-          </div>
-        </fieldset>
+          </select>
+        </div>
+        <div className="booking-form-field">
+          <label htmlFor="book-guests">Number of Guests</label>
+          <input
+            id="book-guests"
+            name="guests"
+            type="number"
+            min="1"
+            required
+            value={form.guests}
+            onChange={handleChange}
+            className="booking-form-input"
+            placeholder="Number of guests"
+          />
+        </div>
+        <div className="booking-form-field">
+          <label htmlFor="book-occasion">Occasion</label>
+          <select
+            id="book-occasion"
+            name="occasion"
+            required
+            value={form.occasion}
+            onChange={handleChange}
+            className="booking-form-select"
+          >
+            <option value="">Select occasion</option>
+            <option value="Birthday">Birthday</option>
+            <option value="Anniversary">Anniversary</option>
+          </select>
+        </div>
+        <button
+          type="submit"
+          className="booking-form-btn"
+          aria-label="Reserve a table"
+          disabled={!isFormValid(form)}
+        >
+          Reserve a Table
+        </button>
       </form>
-    </section>
+    </div>
   );
 };
 
