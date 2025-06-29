@@ -1,7 +1,17 @@
 import React, { useState } from "react";
 
+// Client-side validation function
+export function isFormValid(form) {
+  return Boolean(
+    form.date &&
+    form.time &&
+    form.guests &&
+    Number(form.guests) >= 1 &&
+    form.occasion
+  );
+}
+
 const BookingForm = ({ availableTimes, dispatch, submitForm }) => {
-  // Use a single object for form state (cleaner for multiple fields)
   const [form, setForm] = useState({
     date: "",
     time: "",
@@ -9,20 +19,19 @@ const BookingForm = ({ availableTimes, dispatch, submitForm }) => {
     occasion: "Birthday",
   });
 
-  // Unified handler for all input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
     if (name === "date") {
-      // When date changes, update available times via dispatch
       dispatch(new Date(value));
     }
   };
 
-  // Submit handler for the form
   const handleSubmit = (e) => {
     e.preventDefault();
-    submitForm(form);
+    if (isFormValid(form)) {
+      submitForm(form);
+    }
   };
 
   return (
@@ -31,7 +40,7 @@ const BookingForm = ({ availableTimes, dispatch, submitForm }) => {
         <fieldset>
           {/* Date */}
           <div>
-            <label htmlFor="book-date">Choose Date:</label>
+            <label htmlFor="book-date">Choose date:</label>
             <input
               id="book-date"
               name="date"
@@ -44,7 +53,7 @@ const BookingForm = ({ availableTimes, dispatch, submitForm }) => {
 
           {/* Time */}
           <div>
-            <label htmlFor="book-time">Choose Time:</label>
+            <label htmlFor="book-time">Choose time:</label>
             <select
               id="book-time"
               name="time"
@@ -61,9 +70,9 @@ const BookingForm = ({ availableTimes, dispatch, submitForm }) => {
             </select>
           </div>
 
-          {/* Number of Guests */}
+          {/* Guests */}
           <div>
-            <label htmlFor="book-guests">Number of Guests:</label>
+            <label htmlFor="book-guests">Number of guests:</label>
             <input
               id="book-guests"
               name="guests"
@@ -91,8 +100,12 @@ const BookingForm = ({ availableTimes, dispatch, submitForm }) => {
           </div>
 
           {/* Submit Button */}
-          <div className="btnReceive">
-            <button type="submit" aria-label="Make Your Reservation">
+          <div>
+            <button
+              type="submit"
+              aria-label="Make Your Reservation"
+              disabled={!isFormValid(form)}
+            >
               Make Your Reservation
             </button>
           </div>
