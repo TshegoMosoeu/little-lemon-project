@@ -1,84 +1,105 @@
-import React from "react";
+import React, { useState } from "react";
 
-const BookingForm = (props) => {
-    const [date, setDate] = React.useState(""); // Initialize date state
-    const [times, setTimes] = React.useState(""); // Initialize date state
-    const [guests, setGuests] = React.useState(""); // Initialize date state
-    const [occasion, setOccassion] = React.useState(""); // Initialize date state
+const BookingForm = ({ availableTimes, dispatch, submitForm }) => {
+  // Use a single object for form state (cleaner for multiple fields)
+  const [form, setForm] = useState({
+    date: "",
+    time: "",
+    guests: "",
+    occasion: "Birthday",
+  });
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        props.submitForm({date,times,guests,occasion});
-        // We will sort it later
+  // Unified handler for all input changes
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+    if (name === "date") {
+      // When date changes, update available times via dispatch
+      dispatch(new Date(value));
     }
+  };
 
-    // This function will be called when the date input changes
-    const handleChange = (e) => {
-        setDate(e);
-        props.dispatch(new Date(e));
-    }
+  // Submit handler for the form
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    submitForm(form);
+  };
 
-    return  (
-        <header>
-            <section>
-                <form>
-                    <fieldset>
-                        <div>
-                            <label htmlFor="book-date">Choose Date:</label>
-                            <input id="book-date" value={date} onChange={(e)=> handleChange(e.target.value)} type="date" required />
-                        </div>
-                        {/* For time selection*/}
-                        <div>
-                            <label htmlFor="book-time">Choose Time:</label>
-                            {/** 
-                            
-                            <select id="book-time" value={times} onChange={(e) => setTimes(e.target.value)}>
-                                <option value="">Select a Time</option>
-                                {
-                                    props.availableTimes.availableTimes.map(availableTimes => {return <option key= {availableTimes}>{availableTimes}</option>})
-                                }
-                            </select>
-                            */}
+  return (
+    <section>
+      <form onSubmit={handleSubmit}>
+        <fieldset>
+          {/* Date */}
+          <div>
+            <label htmlFor="book-date">Choose Date:</label>
+            <input
+              id="book-date"
+              name="date"
+              type="date"
+              value={form.date}
+              onChange={handleChange}
+              required
+            />
+          </div>
 
-                            <select
-                                id="book-time"
-                                value={times}
-                                onChange={(e) => setTimes(e.target.value)}
-                            >
-                                <option value="">Select a Time</option>
-                                {props.availableTimes.map((time) => (
-                                <option key={time}>{time}</option>
-                                ))}
-                            </select>
+          {/* Time */}
+          <div>
+            <label htmlFor="book-time">Choose Time:</label>
+            <select
+              id="book-time"
+              name="time"
+              value={form.time}
+              onChange={handleChange}
+              required
+            >
+              <option value="">Select a Time</option>
+              {availableTimes.map((time) => (
+                <option key={time} value={time}>
+                  {time}
+                </option>
+              ))}
+            </select>
+          </div>
 
-                        </div>
-                        {/* For Number of Guests*/}
-                        <div>
-                            <label htmlFor="book-guests">Number of Guests:</label>
-                            <input id="book-guests" min="1" value= {guests} onChange={(e) => setGuests(e.target.value)}/>
-                        </div>
+          {/* Number of Guests */}
+          <div>
+            <label htmlFor="book-guests">Number of Guests:</label>
+            <input
+              id="book-guests"
+              name="guests"
+              type="number"
+              min="1"
+              value={form.guests}
+              onChange={handleChange}
+              required
+            />
+          </div>
 
-                        {/*For Occasion */}
-                        <div>
-                            <label htmlFor="book-occasion">Occasion:</label>
-                            <select id="book-occasion" key={occasion} value={occasion} onChange = {e => setOccassion(e.target.value)}>
-                                <option value="Birthday">Birthday</option>
-                                <option value="Anniversary">Anniversary</option>
-                                <option value="Engagement">Engagement</option>
-                                <option value="Wedding">Wedding</option>
-                                <option value="Other">Other</option>
-                            </select>
-                        </div>
-                        {/* Submit Button */}
-                        <div className="btnReceive">
-                            <input aria-label="On Click" type="submit" value={"Make Your Reservation"} onClick={handleSubmit} />
-                        </div>
-                    </fieldset>
-                </form>
-            </section>
-        </header>
+          {/* Occasion */}
+          <div>
+            <label htmlFor="book-occasion">Occasion:</label>
+            <select
+              id="book-occasion"
+              name="occasion"
+              value={form.occasion}
+              onChange={handleChange}
+              required
+            >
+              <option value="Birthday">Birthday</option>
+              <option value="Anniversary">Anniversary</option>
+            </select>
+          </div>
 
-    );
+          {/* Submit Button */}
+          <div className="btnReceive">
+            <button type="submit" aria-label="Make Your Reservation">
+              Make Your Reservation
+            </button>
+          </div>
+        </fieldset>
+      </form>
+    </section>
+  );
 };
 
 export default BookingForm;

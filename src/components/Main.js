@@ -4,36 +4,22 @@ import { Route, Switch, useLocation } from "wouter";
 import Header from "./Header";
 import Booking from "./Booking";
 import ConfirmedBooking from "./ConfirmedBooking"; // Add your confirmation component
+import { initializeTimes,updateTimes } from "./BookingUtils";
 
-// Same seedRandom and fetchAPI code here...
-const seedRandom = seed => {
-  const m = 2 ** 35 - 31, a = 185852;
-  let s = seed % m;
-  return () => (s = (s * a) % m) / m;
-};
-const fetchAPI = date => {
-  const result = [];
-  const rand = seedRandom(date.getDate());
-  for (let i = 17; i <= 23; i++) {
-    if (rand() < 0.5) result.push(`${i}:00`);
-    if (rand() > 0.5) result.push(`${i}:30`);
-  }
-  return result;
-};
-const submitAPI = formData => true;
+const submitAPI = window.submitAPI; //Use API from global window
 
-function updateTimes(state, date) {
-  return { availableTimes: fetchAPI(date) };
-}
 
 const Main = () => {
+  //Set up reducer with initial times and update function
+
   const [state, dispatch] = useReducer(updateTimes, {
-    availableTimes: fetchAPI(new Date()),
+    availableTimes: initializeTimes(),
   });
 
   const [, setLocation] = useLocation(); // useLocation returns [location, setter] :contentReference[oaicite:3]{index=3}
 
-  const submitForm = formData => {
+  const submitForm = (formData) => {
+    //Submit via API; on success, navigate to confirmation page
     if (submitAPI(formData)) {
       setLocation("/ConfirmedBooking"); // navigate programmatically
     }
